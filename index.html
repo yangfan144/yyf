@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>员工绩效管理办法 — 框架解读</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand: #0067B8; --brand-dark: #00508F; --brand-light: #0076D3;
+  --brand-bg: #0067B81A; --brand-subtle: #0067B80D;
+  --white: #FFFFFF; --bg: #FAFBFC; --bg-alt: #F3F4F6;
+  --text: #1A1A2E; --text-2: #4A4F5E; --text-3: #88909E;
+  --border: #E2E5EA; --border-light: #EEF0F4;
+  --green: #00A651; --green-dark: #008C44; --green-bg: #E6F8EF;
+  --gold: #B8860B; --gold-bg: #FFF8EC;
+  --blue-accent: #2563EB; --blue-bg: #EFF3FF;
+  --orange: #D97706; --orange-bg: #FFF7ED;
+  --font-heading: 'Noto Serif SC','Source Han Serif SC','Songti SC','SimSun',serif;
+  --font-body: 'Noto Sans SC','Source Han Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --nav-w: 268px;
+  --radius: 10px; --radius-lg: 14px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04),0 2px 8px rgba(0,0,0,0.05);
+  --shadow-hover: 0 2px 4px rgba(0,0,0,0.06),0 6px 20px rgba(0,0,0,0.09);
+  --shadow-nav: 0 0 0 1px rgba(0,0,0,0.03),0 4px 20px rgba(0,0,0,0.06);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);color:var(--text);background:var(--bg);line-height:1.72;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ===== 封面页 ===== */
+#cover{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--brand) 0%,#003D7A 100%);
+  color:white;cursor:pointer;
+  transition:opacity 0.7s cubic-bezier(0.4,0,0.2,1),transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+#cover::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 40%,rgba(255,255,255,0.06) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 20%,rgba(0,166,81,0.12) 0%,transparent 55%),
+             radial-gradient(ellipse at 70% 80%,rgba(255,255,255,0.04) 0%,transparent 50%);
+  pointer-events:none;
+}
+#cover.leaving{opacity:0;transform:scale(1.06);pointer-events:none}
+#cover.hidden{display:none}
+.cover-orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.cover-orb:nth-child(1){width:420px;height:420px;top:-110px;right:-60px}
+.cover-orb:nth-child(2){width:280px;height:280px;bottom:-50px;left:-30px}
+.cover-orb:nth-child(3){width:160px;height:160px;top:35%;left:8%;opacity:0.55;border-style:dashed}
+.cover-orb:nth-child(4){width:100px;height:100px;top:15%;right:15%;opacity:0.35;border:1px solid rgba(0,166,81,0.2)}
+.cover-brand{
+  font-size:0.8rem;font-weight:400;letter-spacing:0.35em;
+  text-transform:uppercase;opacity:0.65;margin-bottom:3.5rem;
+  position:relative;z-index:1;
+}
+.cover-title{
+  font-family:var(--font-heading);font-size:3.2rem;font-weight:900;
+  letter-spacing:0.04em;text-align:center;line-height:1.22;
+  margin-bottom:1.8rem;position:relative;z-index:1;
+}
+.cover-subtitle{
+  font-family:var(--font-heading);font-size:1.1rem;font-weight:400;
+  opacity:0.78;text-align:center;max-width:540px;
+  line-height:1.75;margin-bottom:3.5rem;padding:0 1.5rem;
+  position:relative;z-index:1;
+}
+.cover-motto{
+  display:flex;gap:2rem;font-size:0.8rem;
+  font-weight:300;letter-spacing:0.12em;opacity:0.55;margin-bottom:3rem;
+  position:relative;z-index:1;
+}
+/* ===== 封面 CTA 门户按钮 ===== */
+.cover-cta{
+  display:flex;flex-direction:column;align-items:center;gap:1.2rem;
+  position:relative;z-index:1;cursor:pointer;
+}
+/* 脉冲光环容器 */
+.cover-cta-rings{position:relative;width:100px;height:100px}
+.cover-cta-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.5);
+  animation:pulse-ring 2.8s cubic-bezier(0.25,0,0.35,1) infinite;
+}
+.cover-cta-ring:nth-child(2){animation-delay:0.9s}
+.cover-cta-ring:nth-child(3){animation-delay:1.8s}
+@keyframes pulse-ring{
+  0%{transform:scale(0.72);opacity:0.8}
+  60%{opacity:0.15}
+  100%{transform:scale(1.55);opacity:0}
+}
+/* 主按钮 */
+.cover-cta-btn{
+  position:absolute;inset:0;margin:auto;
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  border:2px solid rgba(255,255,255,0.55);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 0 40px rgba(255,255,255,0.06),inset 0 0 30px rgba(255,255,255,0.04);
+  cursor:pointer;
+  z-index:2;
+}
+.cover-cta-btn svg{
+  width:32px;height:32px;color:rgba(255,255,255,0.9);
+  transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cover-cta:hover .cover-cta-btn{
+  background:rgba(255,255,255,0.22);
+  border-color:rgba(255,255,255,0.85);
+  transform:scale(1.08);
+  box-shadow:0 0 60px rgba(255,255,255,0.15),0 0 100px rgba(0,103,184,0.2),0 0 140px rgba(0,166,81,0.12),inset 0 0 40px rgba(255,255,255,0.06);
+}
+.cover-cta:hover .cover-cta-btn svg{transform:translateY(3px)}
+.cover-cta:hover .cover-cta-ring{animation-duration:2s}
+/* 按钮下方文字 */
+.cover-cta-label{
+  font-size:0.85rem;font-weight:400;letter-spacing:0.18em;
+  color:rgba(255,255,255,0.6);transition:all 0.4s ease;
+  user-select:none;
+}
+.cover-cta:hover .cover-cta-label{color:rgba(255,255,255,0.9);letter-spacing:0.24em}
+/* 点击涟漪 */
+.cover-cta-ripple{
+  position:absolute;inset:0;margin:auto;
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  pointer-events:none;z-index:3;opacity:0;transform:scale(0.5);
+  transition:all 0.6s ease-out;
+}
+.cover-cta-ripple.active{opacity:1;transform:scale(2.2);opacity:0}
+.cover-footer{
+  position:absolute;bottom:2rem;font-size:0.7rem;
+  opacity:0.35;letter-spacing:0.06em;
+}
+
+/* ===== 主内容框架 ===== */
+#app{display:none;min-height:100vh}
+#app.visible{display:flex}
+
+/* ===== 侧边导航 ===== */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--nav-w);
+  background:var(--white);box-shadow:var(--shadow-nav);
+  display:flex;flex-direction:column;z-index:100;
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.sidebar-brand{padding:1.6rem 1.5rem;border-bottom:1px solid var(--border-light)}
+.sidebar-brand-title{
+  font-family:var(--font-heading);font-size:0.95rem;
+  font-weight:700;color:var(--brand);margin-bottom:0.2rem;
+  letter-spacing:0.03em;
+}
+.sidebar-brand-sub{font-size:0.7rem;color:var(--text-3);letter-spacing:0.06em}
+.sidebar-nav{flex:1;padding:0.8rem 0;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.75rem 1.5rem;cursor:pointer;transition:all 0.2s ease;
+  border-left:3px solid transparent;color:var(--text-2);font-size:0.85rem;
+  user-select:none;margin:0.15rem 0;
+}
+.nav-item:hover{background:var(--brand-bg);color:var(--text)}
+.nav-item.active{
+  background:var(--brand-bg);color:var(--brand);
+  border-left-color:var(--brand);font-weight:600;
+}
+.nav-icon{width:20px;height:20px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-icon svg{width:100%;height:100%}
+.nav-item.active .nav-icon svg{stroke:var(--brand)}
+.sidebar-footer{
+  padding:1rem 1.5rem;border-top:1px solid var(--border-light);
+  font-size:0.7rem;color:var(--text-3);line-height:1.6;
+}
+
+/* ===== 内容区域 ===== */
+.content-area{margin-left:var(--nav-w);flex:1;min-height:100vh}
+.content-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-light);
+  padding:1rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.breadcrumb{font-size:0.8rem;color:var(--text-3)}
+.breadcrumb strong{color:var(--text);font-weight:500}
+.btn-outline{
+  font-size:0.75rem;padding:0.45rem 1.1rem;
+  border:1px solid var(--border);border-radius:20px;
+  background:var(--white);color:var(--text-2);
+  cursor:pointer;transition:all 0.2s;
+  font-family:var(--font-body);
+}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+
+/* ===== 板块通用 ===== */
+.section{
+  display:none;padding:3.5rem 3rem 6rem;max-width:900px;
+  animation:fadeSlideIn 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.section.active{display:block}
+@keyframes fadeSlideIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.section-label{
+  display:inline-block;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--brand);margin-bottom:1.2rem;
+  padding:0.2rem 0.8rem;background:var(--brand-bg);border-radius:20px;
+}
+.section-label.green{
+  color:var(--green-dark);background:var(--green-bg);
+}
+.section-title{
+  font-family:var(--font-heading);font-size:2.2rem;font-weight:700;
+  color:var(--text);line-height:1.25;margin-bottom:0.8rem;
+  letter-spacing:0.02em;
+}
+.section-subtitle{
+  font-size:1.05rem;color:var(--text-2);
+  line-height:1.75;margin-bottom:3.5rem;max-width:680px;
+}
+
+/* ===== 引言块 ===== */
+.intro-block{
+  background:linear-gradient(135deg,var(--brand-bg) 0%,rgba(0,103,184,0.06) 100%);
+  border-left:4px solid var(--brand);
+  padding:1.5rem 2rem;border-radius:0 var(--radius) var(--radius) 0;
+  margin-bottom:3rem;font-family:var(--font-heading);
+  font-size:0.95rem;line-height:1.85;color:var(--text-2);
+}
+
+/* ===== 卡片网格 ===== */
+.card-grid-2{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin-bottom:3rem;
+}
+
+/* ===== 要点卡片 ===== */
+.challenge-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:1.5rem 1.8rem;box-shadow:var(--shadow-card);
+  border:1px solid var(--border-light);position:relative;overflow:hidden;
+  transition:all 0.25s ease;
+}
+.challenge-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.challenge-card::before{
+  content:attr(data-num);
+  position:absolute;right:1.2rem;top:0.6rem;
+  font-family:var(--font-heading);font-size:2.6rem;font-weight:900;
+  color:var(--brand);opacity:0.07;line-height:1;
+}
+.challenge-card-header{
+  display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem;
+}
+.challenge-icon{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.challenge-icon svg{
+  width:22px;height:22px;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.challenge-card h3{
+  font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--text);
+}
+.challenge-sub{
+  font-size:0.7rem;font-weight:500;display:block;margin-top:2px;
+}
+.challenge-card p{
+  font-size:0.82rem;color:var(--text-2);line-height:1.7;
+}
+
+/* ===== 理念卡片 ===== */
+.belief-cards{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin-bottom:3rem;
+}
+.belief-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:1.8rem;box-shadow:var(--shadow-card);border:1px solid var(--border-light);
+  transition:all 0.25s ease;position:relative;overflow:hidden;
+}
+.belief-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.belief-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:3px 0 0 0;
+}
+.belief-card:nth-child(1)::after{background:var(--brand)}
+.belief-card:nth-child(2)::after{background:var(--green)}
+.belief-card:nth-child(3)::after{background:var(--gold)}
+.belief-card:nth-child(4)::after{background:var(--blue-accent)}
+.belief-icon{
+  width:46px;height:46px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1rem;
+}
+.belief-icon svg{
+  width:24px;height:24px;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.belief-card h3{
+  font-family:var(--font-heading);font-size:1.05rem;font-weight:600;
+  color:var(--text);margin-bottom:0.5rem;
+}
+.belief-card p{
+  font-size:0.82rem;color:var(--text-2);line-height:1.7;
+}
+
+/* ===== 维度卡片 ===== */
+.dimension-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:2rem 2.2rem;margin-bottom:1.2rem;
+  box-shadow:var(--shadow-card);border:1px solid var(--border-light);
+  position:relative;overflow:hidden;
+  transition:all 0.25s ease;
+}
+.dimension-card:hover{box-shadow:var(--shadow-hover)}
+.dimension-card::before{
+  content:'';position:absolute;left:0;top:0;width:5px;bottom:0;
+  border-radius:5px 0 0 5px;
+}
+.dim-self::before{background:var(--brand)}
+.dim-others::before{background:var(--green)}
+.dim-world::before{background:var(--gold)}
+.dimension-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+.dimension-icon{
+  width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.dim-self .dimension-icon{background:var(--brand-bg)}
+.dim-others .dimension-icon{background:var(--green-bg)}
+.dim-world .dimension-icon{background:var(--gold-bg)}
+.dimension-icon svg{
+  width:28px;height:28px;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.dim-self .dimension-icon svg{stroke:var(--brand)}
+.dim-others .dimension-icon svg{stroke:var(--green)}
+.dim-world .dimension-icon svg{stroke:var(--gold)}
+.dimension-title{
+  font-family:var(--font-heading);font-size:1.2rem;font-weight:700;color:var(--text);
+}
+.dimension-title-sub{font-size:0.8rem;color:var(--text-3);font-weight:400}
+.dimension-desc{
+  font-size:0.85rem;color:var(--text-2);line-height:1.75;margin-bottom:1.5rem;
+  padding-left:0.5rem;
+}
+.ability-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem}
+.ability-item{display:flex;gap:0.7rem;align-items:flex-start;font-size:0.82rem}
+.ability-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:7px;
+}
+.dim-self .ability-dot{background:var(--brand);opacity:0.7}
+.dim-others .ability-dot{background:var(--green);opacity:0.7}
+.dim-world .ability-dot{background:var(--gold);opacity:0.7}
+.ability-name{font-weight:500;color:var(--text)}
+.ability-desc{color:var(--text-3);font-size:0.72rem;line-height:1.65;margin-top:1px}
+
+/* ===== 策略手风琴 ===== */
+.strategy-group{
+  margin-bottom:0.8rem;background:var(--white);
+  border-radius:var(--radius);box-shadow:var(--shadow-card);
+  border:1px solid var(--border-light);overflow:hidden;
+  transition:all 0.2s ease;
+}
+.strategy-group:hover{border-color:var(--brand);box-shadow:var(--shadow-hover)}
+.strategy-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 1.5rem;cursor:pointer;
+  transition:background 0.2s;user-select:none;
+}
+.strategy-header:hover{background:var(--bg-alt)}
+.strategy-header-left{display:flex;align-items:center;gap:0.8rem}
+.strategy-num{
+  width:30px;height:30px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+  color:white;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;
+}
+.strategy-title{
+  font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--text);
+}
+.strategy-arrow{width:22px;height:22px;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.strategy-arrow svg{width:100%;height:100%;stroke:var(--text-3);fill:none;stroke-width:2}
+.strategy-group.open .strategy-arrow{transform:rotate(180deg)}
+.strategy-body{max-height:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1)}
+.strategy-group.open .strategy-body{max-height:1400px}
+.strategy-list{
+  padding:0 1.5rem 1.2rem;border-top:1px solid var(--border-light);
+  margin-top:0.2rem;
+}
+.strategy-item{padding:1rem 0;border-bottom:1px solid var(--border-light)}
+.strategy-item:last-child{border-bottom:none}
+.strategy-item h4{
+  font-family:var(--font-heading);font-size:0.85rem;font-weight:600;
+  color:var(--text);margin-bottom:0.3rem;
+}
+.strategy-item p{
+  font-size:0.82rem;color:var(--text-2);line-height:1.7;
+}
+.strategy-item::before{
+  content:'▸';color:var(--brand);font-size:0.7rem;margin-right:0.4rem;
+  display:inline;vertical-align:middle;
+}
+
+/* ===== 文化块 ===== */
+.culture-block{
+  background:linear-gradient(135deg,var(--brand) 0%,#003D7A 100%);
+  border-radius:var(--radius-lg);padding:4rem 3rem;text-align:center;color:white;
+  margin-bottom:3rem;position:relative;overflow:hidden;
+}
+.culture-block::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 50%,rgba(255,255,255,0.05) 0%,transparent 60%),
+             radial-gradient(circle at 70% 30%,rgba(255,255,255,0.03) 0%,transparent 50%),
+             radial-gradient(circle at 85% 70%,rgba(0,166,81,0.1) 0%,transparent 40%);
+  pointer-events:none;
+}
+.culture-words{
+  display:flex;justify-content:center;gap:3rem;
+  margin-bottom:2.2rem;flex-wrap:wrap;position:relative;z-index:1;
+}
+.culture-word{
+  font-family:var(--font-heading);font-size:2rem;
+  font-weight:700;letter-spacing:0.1em;word-break:keep-all;
+  position:relative;
+}
+.culture-word::after{
+  content:'';display:block;width:32px;height:3px;background:rgba(255,255,255,0.35);
+  margin:0.5rem auto 0;border-radius:2px;
+}
+.culture-block p{
+  font-size:0.85rem;line-height:1.8;
+  opacity:0.82;max-width:580px;margin:0 auto;position:relative;z-index:1;
+}
+.closing-text{
+  font-family:var(--font-heading);font-size:0.95rem;
+  line-height:1.85;color:var(--text-2);max-width:680px;
+  position:relative;padding-left:1.2rem;
+}
+.closing-text::before{
+  content:'';position:absolute;left:0;top:0.2rem;bottom:0.2rem;
+  width:3px;background:var(--brand);opacity:0.3;border-radius:2px;
+}
+.closing-text.green::before{background:var(--green);opacity:0.35}
+
+/* ===== 页脚 ===== */
+.page-footer{
+  margin-top:4rem;padding:2.5rem;
+  border-top:2px solid var(--border-light);text-align:center;
+}
+.footer-brand{
+  font-family:var(--font-heading);font-size:1.1rem;
+  font-weight:700;color:var(--brand);margin-bottom:0.5rem;
+}
+.footer-info{font-size:0.75rem;color:var(--text-3);line-height:1.7}
+
+/* ===== 浮动章节导航 ===== */
+.chapter-nav-btn{
+  position:fixed;bottom:2rem;right:2rem;
+  z-index:200;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+  color:white;border:none;cursor:pointer;
+  box-shadow:0 4px 24px rgba(0,103,184,0.3),0 0 0 0 rgba(0,103,184,0.2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  animation:nav-pulse 2.5s cubic-bezier(0.25,0,0.35,1) infinite;
+}
+@keyframes nav-pulse{
+  0%,70%{box-shadow:0 4px 24px rgba(0,103,184,0.3),0 0 0 0 rgba(0,103,184,0.15)}
+  100%{box-shadow:0 4px 24px rgba(0,103,184,0.3),0 0 0 18px rgba(0,103,184,0)}
+}
+.chapter-nav-btn:hover{
+  transform:scale(1.08);
+  box-shadow:0 6px 32px rgba(0,103,184,0.4),0 0 0 0 rgba(0,103,184,0.3);
+  animation:none;
+}
+.chapter-nav-btn svg{
+  width:22px;height:22px;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.chapter-nav-btn:hover svg{transform:rotate(90deg)}
+.chapter-nav-btn .badge{
+  position:absolute;top:-4px;right:-4px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);color:white;
+  font-size:0.6rem;font-weight:700;display:flex;
+  align-items:center;justify-content:center;
+  border:2px solid var(--white);
+}
+
+/* 弹出导航面板 */
+.chapter-nav-panel{
+  position:fixed;bottom:5.5rem;right:2rem;
+  z-index:199;width:220px;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-radius:var(--radius-lg);
+  box-shadow:0 4px 32px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.06);
+  border:1px solid var(--border-light);
+  padding:0.5rem 0;overflow:hidden;
+  transform-origin:bottom right;
+  transform:scale(0.5);opacity:0;pointer-events:none;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.chapter-nav-panel.open{transform:scale(1);opacity:1;pointer-events:auto}
+.chapter-nav-panel-title{
+  font-size:0.65rem;font-weight:600;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text-3);
+  padding:0.6rem 1.2rem 0.4rem;
+}
+.chapter-nav-item{
+  display:flex;align-items:center;gap:0.7rem;
+  padding:0.6rem 1.2rem;cursor:pointer;
+  font-size:0.82rem;color:var(--text-2);
+  transition:all 0.15s ease;
+  border-left:3px solid transparent;
+}
+.chapter-nav-item:hover{background:var(--brand-bg);color:var(--text)}
+.chapter-nav-item.active{
+  background:var(--brand-bg);color:var(--brand);
+  border-left-color:var(--brand);font-weight:600;
+}
+.chapter-nav-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--border);
+  transition:all 0.2s ease;
+}
+.chapter-nav-item.active .chapter-nav-dot{background:var(--brand);box-shadow:0 0 8px rgba(0,103,184,0.4)}
+.chapter-nav-item:nth-child(5) .chapter-nav-dot{background:var(--border)}
+.chapter-nav-item:nth-child(5).active .chapter-nav-dot{background:var(--green);box-shadow:0 0 8px rgba(0,166,81,0.4)}
+.chapter-nav-item:nth-child(5).active{color:var(--green-dark);border-left-color:var(--green);background:var(--green-bg)}
+
+/* 面板遮罩 */
+.chapter-nav-overlay{
+  display:none;position:fixed;inset:0;z-index:198;
+}
+.chapter-nav-overlay.visible{display:block}
+
+/* ===== 移动端 ===== */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:99;
+  backdrop-filter:blur(2px);
+}
+.sidebar-overlay.visible{display:block}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .content-area{margin-left:0}
+  .chapter-nav-btn{bottom:1.2rem;right:1.2rem;width:50px;height:50px}
+  .chapter-nav-panel{bottom:4.5rem;right:1.2rem;width:200px}
+  .card-grid-2,.belief-cards{grid-template-columns:1fr}
+  .ability-list{grid-template-columns:1fr}
+  .section{padding:2.5rem 1.5rem 5rem}
+  .culture-words{flex-direction:column;gap:1rem}
+  .cover-title{font-size:2.2rem}
+  .cover-motto{flex-direction:column;align-items:center;gap:0.5rem}
+}
+</style>
+</head>
+<body>
+
+<div id="cover" onclick="enterSite()">
+  <div class="cover-orb"></div><div class="cover-orb"></div>
+  <div class="cover-orb"></div><div class="cover-orb"></div>
+  <div class="cover-brand">中国移动 · China Mobile</div>
+  <h1 class="cover-title">员工绩效管理办法<br>框架解读</h1>
+  <p class="cover-subtitle">对标省公司管理办法，构建科学规范、公平公正的绩效管理体系</p>
+  <div class="cover-motto">
+    <span>公平公正</span><span>·</span>
+    <span>注重实绩</span><span>·</span>
+    <span>持续改进</span>
+  </div>
+  <div class="cover-cta" onclick="event.stopPropagation();enterSite()">
+    <div class="cover-cta-rings">
+      <div class="cover-cta-ring"></div>
+      <div class="cover-cta-ring"></div>
+      <div class="cover-cta-ring"></div>
+      <div class="cover-cta-btn">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="24" r="21" opacity="0.45"/>
+          <path d="M24 13v20"/>
+          <path d="M15 25l9 9 9-9"/>
+          <circle cx="11" cy="31" r="1.8" fill="currentColor" stroke="none" opacity="0.5"/>
+          <circle cx="37" cy="31" r="1.8" fill="currentColor" stroke="none" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="cover-cta-ripple" id="ctaRipple"></div>
+    </div>
+    <span class="cover-cta-label">点 击 探 索</span>
+  </div>
+  <div class="cover-footer">中国移动通信集团云南有限公司楚雄分公司</div>
+</div>
+
+<div id="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">员工绩效管理办法</div>
+      <div class="sidebar-brand-sub">China Mobile</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-section="overview" onclick="switchSection('overview')">
+        <span class="nav-icon"><svg viewBox="0 0 20 20"><rect x="2.5" y="2.5" width="15" height="15" rx="2"/><line x1="6.5" y1="7.5" x2="13.5" y2="7.5"/><line x1="6.5" y1="10.5" x2="13.5" y2="10.5"/><line x1="6.5" y1="13.5" x2="10.5" y2="13.5"/></svg></span>
+        框架概览
+      </div>
+      <div class="nav-item" data-section="principles" onclick="switchSection('principles')">
+        <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M10 17.5s-7-4.2-7-8.5C3 6.2 5.2 4 8 4c1.5 0 2 .5 2 .5s.5-.5 2-.5c2.8 0 5 2.2 5 5 0 4.3-7 8.5-7 8.5z"/></svg></span>
+        考核原则
+      </div>
+      <div class="nav-item" data-section="dimensions" onclick="switchSection('dimensions')">
+        <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M9.5 2.5l2 4h4.5l-3.5 3L14 14.5 9.5 11.5 5 14.5 6.5 10 3 7h4.5z"/></svg></span>
+        考核维度
+      </div>
+      <div class="nav-item" data-section="process" onclick="switchSection('process')">
+        <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M3 14l4-4 3 3 5-5"/><path d="M14 4h4v4"/></svg></span>
+        实施流程
+      </div>
+      <div class="nav-item" data-section="governance" onclick="switchSection('governance')">
+        <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M2.5 10c0-4 3-7 7.5-7s7.5 3 7.5 7"/><path d="M7 14c0-1.5 1.3-3 3-3s3 1.5 3 3"/><circle cx="10" cy="17.5" r="1.2"/></svg></span>
+        组织保障
+      </div>
+    </div>
+    <div class="sidebar-footer">中国移动通信集团<br>云南有限公司楚雄分公司</div>
+  </nav>
+
+  <div class="content-area">
+    <header class="content-header">
+      <div class="breadcrumb">员工绩效管理办法 / <strong id="breadcrumb-current">框架概览</strong></div>
+      <div class="content-header-actions">
+        <button class="btn-outline" onclick="backToCover()">← 返回封面</button>
+      </div>
+    </header>
+
+    <!-- ===== 板块0：框架概览 ===== -->
+    <div class="section active" id="sec-overview">
+      <div class="section-label">Framework Overview</div>
+      <h1 class="section-title">员工绩效管理办法</h1>
+      <p class="section-subtitle">对标中国移动通信集团云南有限公司员工绩效管理办法，结合楚雄分公司实际，构建以业绩为导向、以能力为基础、以态度为保障的绩效管理体系，推动组织效能与员工发展双提升。</p>
+      <div class="intro-block">
+        "考核什么、如何考核、考核结果怎么用"——对这三个核心问题的系统回答，构成了绩效管理办法的整体框架。本办法坚持公平公正、注重实绩、持续改进的基本原则，覆盖绩效计划、过程跟踪、考核评价、结果应用的全流程。
+      </div>
+      <div class="card-grid-2">
+        <div class="challenge-card" style="cursor:pointer" onclick="switchSection('principles')">
+          <div class="challenge-card-header">
+            <div class="challenge-icon" style="background:var(--brand-bg)">
+              <svg viewBox="0 0 22 22" style="stroke:var(--brand)"><path d="M11 17.5s-7-4.3-7-8.5C4 6.2 6.2 4 9 4c1.5 0 2 .5 2 .5S11.5 4 13 4c2.8 0 5 2.2 5 5 0 4.2-7 8.5-7 8.5z"/></svg>
+            </div>
+            <div><h3>考核原则</h3><span class="challenge-sub" style="color:var(--brand)">4条核心理念</span></div>
+          </div>
+          <p>公平公正、注重实绩、持续改进、分层分类——绩效管理的根本出发点和价值导向。</p>
+        </div>
+        <div class="challenge-card" style="cursor:pointer" onclick="switchSection('dimensions')">
+          <div class="challenge-card-header">
+            <div class="challenge-icon" style="background:var(--green-bg)">
+              <svg viewBox="0 0 22 22" style="stroke:var(--green)"><path d="M10.5 3l2 4h4.5l-3.5 3L15 14.5l-4.5-3-4.5 3L7.5 10 4 7h4.5z"/></svg>
+            </div>
+            <div><h3>考核维度</h3><span class="challenge-sub" style="color:var(--green)">3个维度 · 多层次指标</span></div>
+          </div>
+          <p>工作业绩、能力素质、工作态度——三位一体的考核维度体系，全面评价员工绩效表现。</p>
+        </div>
+        <div class="challenge-card" style="cursor:pointer" onclick="switchSection('process')">
+          <div class="challenge-card-header">
+            <div class="challenge-icon" style="background:var(--gold-bg)">
+              <svg viewBox="0 0 22 22" style="stroke:var(--gold)"><path d="M4 14l4-4 3 3 5-5"/><path d="M15 5h3v3"/></svg>
+            </div>
+            <div><h3>实施流程</h3><span class="challenge-sub" style="color:var(--gold)">4个阶段 · 全闭环</span></div>
+          </div>
+          <p>绩效计划→过程跟踪→考核评价→结果应用，四阶段闭环管理确保绩效管理落地见效。</p>
+        </div>
+        <div class="challenge-card" style="cursor:pointer" onclick="switchSection('governance')">
+          <div class="challenge-card-header">
+            <div class="challenge-icon" style="background:var(--blue-bg)">
+              <svg viewBox="0 0 22 22" style="stroke:var(--blue-accent)"><path d="M3 11c0-3.8 3-7 8-7s8 3.2 8 7"/><path d="M7 15c0-1.5 1.3-3 3-3s3 1.5 3 3"/><circle cx="11" cy="18" r="1.2"/></svg>
+            </div>
+            <div><h3>组织保障</h3><span class="challenge-sub" style="color:var(--blue-accent)">制度保障 · 持续优化</span></div>
+          </div>
+          <p>组织保障、申诉机制、监督评估、迭代优化——为绩效管理体系提供坚实支撑。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 板块1：考核原则 ===== -->
+    <div class="section" id="sec-principles">
+      <div class="section-label">Chapter 01</div>
+      <h1 class="section-title">考核原则</h1>
+      <p class="section-subtitle">绩效管理的根本出发点和价值导向——四项基本原则贯穿绩效考核全过程，确保考核的科学性、公正性和激励性。</p>
+      <div class="belief-cards">
+        <div class="belief-card">
+          <div class="belief-icon" style="background:var(--brand-bg)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--brand)"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3>公平公正</h3>
+          <p>统一的考核标准和流程，公开透明的评价机制，确保每位员工在同等条件下得到客观公正的评价。杜绝主观臆断和人情干扰。</p>
+        </div>
+        <div class="belief-card">
+          <div class="belief-icon" style="background:var(--green-bg)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--green)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="9" x2="12" y2="21"/></svg>
+          </div>
+          <h3>注重实绩</h3>
+          <p>以工作业绩为核心导向，以可量化、可验证的成果为依据，真实反映员工的工作贡献和价值产出，避免"干多干少一个样"。</p>
+        </div>
+        <div class="belief-card">
+          <div class="belief-icon" style="background:var(--gold-bg)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--gold)"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 14.5 12 11.5 8 14.5l1.5-4.5L6 7.5h4.5z"/></svg>
+          </div>
+          <h3>持续改进</h3>
+          <p>绩效考核不仅是评价工具，更是发展的助推器。通过绩效反馈与辅导，帮助员工发现问题、明确方向，实现个人能力与组织绩效的共同提升。</p>
+        </div>
+        <div class="belief-card">
+          <div class="belief-icon" style="background:var(--blue-bg)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--blue-accent)"><circle cx="8" cy="10" r="3"/><circle cx="16" cy="10" r="3"/><path d="M2 19c0-3 2.5-5 6-5 1.5 0 2.5.5 3 1"/><path d="M14 14c3 0 6 2 6 5"/></svg>
+          </div>
+          <h3>分层分类</h3>
+          <p>根据岗位性质、管理层级、工作特点的不同，设置差异化的考核指标和权重，避免"一刀切"，体现岗位差异和管理精细化。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 板块2：考核维度 ===== -->
+    <div class="section" id="sec-dimensions">
+      <div class="section-label">Chapter 02</div>
+      <h1 class="section-title">考核维度</h1>
+      <p class="section-subtitle">构建"业绩+能力+态度"三位一体的考核维度体系，全面、客观地评价员工的综合绩效表现。</p>
+
+      <div class="dimension-card dim-self">
+        <div class="dimension-header">
+          <div class="dimension-icon">
+            <svg viewBox="0 0 26 26"><rect x="4" y="3" width="18" height="14" rx="2"/><line x1="8" y1="9" x2="18" y2="9"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="15" x2="14" y2="15"/></svg>
+          </div>
+          <div><div class="dimension-title">工作业绩 <span class="dimension-title-sub">考核权重 60%-70%</span></div></div>
+        </div>
+        <p class="dimension-desc">以岗位职责和年度工作目标为依据，重点考核工作任务完成情况、工作质量与效率、目标达成度及创新贡献。</p>
+        <div class="ability-list">
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">目标达成</div><div class="ability-desc">年度/季度KPI完成率与重点工作里程碑</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">工作质量</div><div class="ability-desc">成果准确率、规范性及客户/协作方满意度</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">工作效率</div><div class="ability-desc">任务完成时效性及资源利用效率</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">创新贡献</div><div class="ability-desc">流程优化、方法改进及可复制的创新实践</div></div></div>
+        </div>
+      </div>
+
+      <div class="dimension-card dim-others">
+        <div class="dimension-header">
+          <div class="dimension-icon">
+            <svg viewBox="0 0 26 26"><circle cx="13" cy="9" r="4"/><path d="M5 22c0-4.5 3.5-7 8-7s8 2.5 8 7"/><path d="M13 3v2M13 17v3"/></svg>
+          </div>
+          <div><div class="dimension-title">能力素质 <span class="dimension-title-sub">考核权重 20%-30%</span></div></div>
+        </div>
+        <p class="dimension-desc">评估员工胜任岗位所需的专业知识、业务技能和综合素质，关注员工的学习成长和潜力发展，引导员工持续提升个人能力。</p>
+        <div class="ability-list">
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">专业能力</div><div class="ability-desc">岗位所需的专业知识深度与业务技能水平</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">学习发展</div><div class="ability-desc">主动学习意愿、新技能掌握速度及能力提升</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">沟通协调</div><div class="ability-desc">跨部门协作、信息传递及冲突化解能力</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">解决问题</div><div class="ability-desc">分析判断、决策质量和应急处理能力</div></div></div>
+        </div>
+      </div>
+
+      <div class="dimension-card dim-world">
+        <div class="dimension-header">
+          <div class="dimension-icon">
+            <svg viewBox="0 0 26 26"><path d="M13 2l3.5 7h7.5l-6 4.5 2.5 7.5-7.5-5-7.5 5 2.5-7.5-6-4.5h7.5z"/></svg>
+          </div>
+          <div><div class="dimension-title">工作态度 <span class="dimension-title-sub">考核权重 10%</span></div></div>
+        </div>
+        <p class="dimension-desc">衡量员工的工作积极性和职业素养，包括责任心、纪律性、团队合作精神等方面，反映员工的职业成熟度和文化契合度。</p>
+        <div class="ability-list">
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">责任心</div><div class="ability-desc">对工作任务的担当意识与主动跟进程度</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">纪律性</div><div class="ability-desc">遵守规章制度和劳动纪律的情况</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">团队协作</div><div class="ability-desc">与同事的分工配合和团队贡献度</div></div></div>
+          <div class="ability-item"><span class="ability-dot"></span><div><div class="ability-name">服务意识</div><div class="ability-desc">对内外部客户需求的响应度和满意度</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 板块3：实施流程 ===== -->
+    <div class="section" id="sec-process">
+      <div class="section-label">Chapter 03</div>
+      <h1 class="section-title">实施流程</h1>
+      <p class="section-subtitle">绩效管理是一个持续循环的过程——从计划制定到结果应用，四个阶段环环相扣，形成完整的闭环管理体系。</p>
+
+      <div class="strategy-group open">
+        <div class="strategy-header" onclick="toggleAccordion(this)">
+          <div class="strategy-header-left"><span class="strategy-num">01</span><span class="strategy-title">绩效计划制定</span></div>
+          <span class="strategy-arrow"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <div class="strategy-body"><div class="strategy-list">
+          <div class="strategy-item"><h4>分解年度目标，层层落实到岗</h4><p>根据公司年度战略目标和部门重点任务，将KPI逐级分解至部门、团队和个人，确保目标对齐、责任明确。</p></div>
+          <div class="strategy-item"><h4>制定个人绩效计划书</h4><p>考核人与被考核人共同商议确定考核周期内的关键绩效指标、重点工作任务及相应的权重和评分标准。</p></div>
+          <div class="strategy-item"><h4>签署绩效合约</h4><p>双方确认后签署绩效计划书，作为考核周期内的工作依据和年终评价的基础。</p></div>
+        </div></div>
+      </div>
+
+      <div class="strategy-group">
+        <div class="strategy-header" onclick="toggleAccordion(this)">
+          <div class="strategy-header-left"><span class="strategy-num">02</span><span class="strategy-title">过程跟踪与辅导</span></div>
+          <span class="strategy-arrow"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <div class="strategy-body"><div class="strategy-list">
+          <div class="strategy-item"><h4>定期进度回顾与沟通</h4><p>考核人按月或按季度与被考核人进行绩效面谈，跟踪任务进度，及时发现问题并提供指导支持。</p></div>
+          <div class="strategy-item"><h4>绩效记录与数据收集</h4><p>建立绩效过程档案，记录关键事件、工作亮点和改进建议，为年终评价积累客观依据。</p></div>
+        </div></div>
+      </div>
+
+      <div class="strategy-group">
+        <div class="strategy-header" onclick="toggleAccordion(this)">
+          <div class="strategy-header-left"><span class="strategy-num">03</span><span class="strategy-title">考核评价实施</span></div>
+          <span class="strategy-arrow"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <div class="strategy-body"><div class="strategy-list">
+          <div class="strategy-item"><h4>自评与上级评价相结合</h4><p>员工对照绩效计划书进行自评，考核人依据过程记录和实际表现进行评价打分，必要时引入360度评价。</p></div>
+          <div class="strategy-item"><h4>绩效等级评定</h4><p>根据综合得分确定绩效等级（优秀/良好/合格/待改进/不合格），实行强制分布或等级比例控制。</p></div>
+        </div></div>
+      </div>
+
+      <div class="strategy-group">
+        <div class="strategy-header" onclick="toggleAccordion(this)">
+          <div class="strategy-header-left"><span class="strategy-num">04</span><span class="strategy-title">结果应用与反馈</span></div>
+          <span class="strategy-arrow"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <div class="strategy-body"><div class="strategy-list">
+          <div class="strategy-item"><h4>绩效反馈面谈</h4><p>考核人向被考核人反馈评价结果，肯定成绩，指出不足，共同制定下阶段改进计划。</p></div>
+          <div class="strategy-item"><h4>结果与激励挂钩</h4><p>绩效结果与薪酬调整、奖金分配、岗位晋升、评优评先、培训机会等直接关联。</p></div>
+          <div class="strategy-item"><h4>绩效申诉机制</h4><p>员工对考核结果有异议的，可在规定时限内按程序提出申诉，由绩效管理委员会复核裁定。</p></div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ===== 板块4：组织保障 ===== -->
+    <div class="section" id="sec-governance">
+      <div class="section-label green">Chapter 04</div>
+      <h1 class="section-title">组织保障</h1>
+      <p class="section-subtitle">绩效管理体系的有效运行，需要坚强的组织领导、完善的制度保障和持续的优化迭代。</p>
+      <div class="culture-block">
+        <div class="culture-words">
+          <span class="culture-word">科学规范</span>
+          <span class="culture-word">公平公正</span>
+          <span class="culture-word">持续优化</span>
+        </div>
+        <p>以科学规范的制度设计为基础，以公平公正的执行为保障，以持续优化的迭代为动力，打造具有中国移动特色的绩效管理体系，为员工成长赋能，为组织发展助力。</p>
+      </div>
+      <p class="closing-text green">绩效管理办法不是一成不变的静态文本，而是一个在实践中不断检视、修正和完善的有机系统。每一次考核周期的结束，都是下一个改进周期的开始。唯有坚持问题导向、实绩导向，绩效管理才能真正成为推动组织和个人共同成长的引擎。</p>
+      <div class="page-footer">
+        <div class="footer-brand">中国移动通信集团云南有限公司楚雄分公司</div>
+        <div class="footer-info">人力资源部（党委组织部）<br>对标省公司员工绩效管理办法编制<br>公平公正 · 注重实绩 · 持续改进</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="chapter-nav-btn" id="chapterNavBtn" onclick="toggleChapterNav()" title="章节导航">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+    <line x1="12" y1="8" x2="12" y2="16"/>
+    <circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/>
+    <line x1="8" y1="11" x2="16" y2="11"/>
+  </svg>
+  <span class="badge">5</span>
+</button>
+
+<div class="chapter-nav-panel" id="chapterNavPanel">
+  <div class="chapter-nav-panel-title">章节导航</div>
+  <div class="chapter-nav-item active" data-section="overview" onclick="switchSection('overview');closeChapterNav()">
+    <span class="chapter-nav-dot"></span>框架概览
+  </div>
+  <div class="chapter-nav-item" data-section="principles" onclick="switchSection('principles');closeChapterNav()">
+    <span class="chapter-nav-dot"></span>考核原则
+  </div>
+  <div class="chapter-nav-item" data-section="dimensions" onclick="switchSection('dimensions');closeChapterNav()">
+    <span class="chapter-nav-dot"></span>考核维度
+  </div>
+  <div class="chapter-nav-item" data-section="process" onclick="switchSection('process');closeChapterNav()">
+    <span class="chapter-nav-dot"></span>实施流程
+  </div>
+  <div class="chapter-nav-item" data-section="governance" onclick="switchSection('governance');closeChapterNav()">
+    <span class="chapter-nav-dot"></span>组织保障
+  </div>
+</div>
+<div class="chapter-nav-overlay" id="chapterNavOverlay" onclick="closeChapterNav()"></div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+
+<script>
+function enterSite(){
+  const ripple=document.getElementById('ctaRipple');
+  if(ripple){ripple.classList.add('active');setTimeout(()=>ripple.classList.remove('active'),600)}
+  const c=document.getElementById('cover'),a=document.getElementById('app');
+  c.classList.add('leaving');
+  setTimeout(()=>{c.classList.add('hidden');a.classList.add('visible')},700)
+}
+function backToCover(){
+  document.getElementById('cover').classList.remove('hidden','leaving');
+  document.getElementById('app').classList.remove('visible')
+}
+const SN={overview:'框架概览',principles:'考核原则',dimensions:'考核维度',process:'实施流程',governance:'组织保障'};
+const SO=['overview','principles','dimensions','process','governance'];
+function switchSection(id){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.toggle('active',i.dataset.section===id));
+  document.querySelectorAll('.chapter-nav-item').forEach(i=>i.classList.toggle('active',i.dataset.section===id));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById('sec-'+id);if(t)t.classList.add('active');
+  document.getElementById('breadcrumb-current').textContent=SN[id]||id;
+  const sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+  if(sb.classList.contains('mobile-open')){sb.classList.remove('mobile-open');ov.classList.remove('visible')}
+  window.scrollTo(0,0)
+}
+function toggleAccordion(h){h.parentElement.classList.toggle('open')}
+function toggleChapterNav(){
+  const panel=document.getElementById('chapterNavPanel');
+  const overlay=document.getElementById('chapterNavOverlay');
+  if(panel.classList.contains('open')){closeChapterNav()}else{
+    panel.classList.add('open');overlay.classList.add('visible');
+  }
+}
+function closeChapterNav(){
+  document.getElementById('chapterNavPanel').classList.remove('open');
+  document.getElementById('chapterNavOverlay').classList.remove('visible');
+}
+function toggleMobileMenu(){
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebarOverlay').classList.toggle('visible')
+}
+document.addEventListener('keydown',e=>{
+  const i=SO.findIndex(s=>{const el=document.getElementById('sec-'+s);return el&&el.classList.contains('active')});
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();switchSection(SO[(i+1)%SO.length])}
+  else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();switchSection(SO[(i-1+SO.length)%SO.length])}
+})
+</script>
+</body>
+</html>
